@@ -9,61 +9,46 @@ public class UserController : ControllerBase
 {
     private readonly FractoDbContext _context;
     private readonly IJwtService _jwtService;
+    private readonly IFileService _fileService;
 
-    public UserController(FractoDbContext context, IJwtService jwtService)
+      public UserController(FractoDbContext context, IJwtService jwtService, IFileService fileService)
     {
         _context = context;
         _jwtService = jwtService;
+        _fileService = fileService;
     }
 
-    // ================= USER SIDE =================
+    // ======================================================= USER SIDE =====================================================
 
-    // POST: api/User/register
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromForm] User user, IFormFile? profileImage)
-    {
-        if (await _context.Users.AnyAsync(u => u.username == user.username))
-            return BadRequest("Username already exists.");
-
-        user.role = "User"; // default role (alwaays user)
-
-        // Handle profile image
-        if (profileImage != null && profileImage.Length > 0)
+        public async Task<IActionResult> Register([FromForm] RegisterRequest request, IFormFile? profileImage)
         {
-            var uploadDir = Path.Combine("wwwroot", "uploads", "users");
-            if (!Directory.Exists(uploadDir))
+            if (await _context.Users.AnyAsync(u => u.username == request.username))
+                return BadRequest("Username already exists.");
+
+            var user = new User
             {
-                Directory.CreateDirectory(uploadDir);
-            }
+                username = request.username,
+                // Role is set from the request. Defaults to "User" in the DTO.
+                // An admin could potentially pass "Admin" here if needed.
+                
+                role = "User"
+            };
 
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(profileImage.FileName)}";
-            var filePath = Path.Combine(uploadDir, fileName);
+            // Hash password
+            var passwordHasher = new PasswordHasher<User>();
+            user.password = passwordHasher.HashPassword(user, request.password);
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            // Handle profile image
+            if (profileImage != null)
             {
-                await profileImage.CopyToAsync(stream);
+                user.profileImagePath = await _fileService.SaveImageAsync(profileImage, "users");
             }
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
 
-            user.profileImagePath = $"uploads/users/{fileName}";
+            return Ok("User registered successfully.");
         }
-
-        // Hash password
-        var passwordHasher = new PasswordHasher<User>();
-        if (!string.IsNullOrWhiteSpace(user.password))
-        {
-            user.password = passwordHasher.HashPassword(user, user.password);
-        }
-        else
-        {
-            return BadRequest("Password cannot be null or empty.");
-        }
-
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
-
-        return Ok("User registered successfully.");
-    }
-
     // POST: api/User/login
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
@@ -93,7 +78,10 @@ public class UserController : ControllerBase
         return Ok(new { message = "Logout successful. Please remove the token from client storage." });
     }
 
-    // ================= ADMIN SIDE =================
+
+
+
+    //========================================== ADMIN SIDE ================================================
 
     [HttpGet]
     [Authorize(Roles = "Admin")]

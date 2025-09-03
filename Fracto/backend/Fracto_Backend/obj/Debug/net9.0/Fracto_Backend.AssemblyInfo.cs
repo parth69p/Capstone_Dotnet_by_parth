@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Fracto_Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f5c9cec6ee788b7b3e5505c29b98f0a2a74376a2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0368c0c4417ff562075125bebc0b4cf65adddb19")]
 [assembly: System.Reflection.AssemblyProductAttribute("Fracto_Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Fracto_Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

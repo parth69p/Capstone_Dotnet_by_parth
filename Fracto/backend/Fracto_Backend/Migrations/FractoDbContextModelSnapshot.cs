@@ -191,11 +191,13 @@ namespace Fracto_Backend.Migrations
 
             modelBuilder.Entity("Doctor", b =>
                 {
-                    b.HasOne("Specialization", null)
+                    b.HasOne("Specialization", "Specialization")
                         .WithMany("doctors")
                         .HasForeignKey("specializationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Specialization");
                 });
 
             modelBuilder.Entity("Rating", b =>

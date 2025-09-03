@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 
+builder.Services.AddScoped<IFileService, FileService>();
 // For Testing Using Swagger For Api (UserContoller)
 builder.Services.AddSwaggerGen();
 
@@ -58,6 +59,7 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -65,11 +67,11 @@ if (app.Environment.IsDevelopment())
 }
 
 // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger(); // <-- ADD THIS LINE
-        app.UseSwaggerUI(); // <-- ADD THIS LINE
-    }
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger(); // <-- ADD THIS LINE
+    app.UseSwaggerUI(); // <-- ADD THIS LINE
+}
 app.UseHttpsRedirection();
 
 // ---------------------------- Using Cors------------------------------
