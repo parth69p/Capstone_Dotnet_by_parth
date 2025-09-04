@@ -22,6 +22,11 @@ export interface UpdateDoctorDto {
   city: string;
   specializationId: number;
 }
+export interface SpecializationDto {
+  specializationId: number;
+  specializationName: string;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +37,7 @@ export class DoctorService {
 
   constructor() {
     this.api = axios.create({
-      baseURL: 'https://localhost:5001/api/Doctor', // replace with your API URL
+      baseURL: 'https://localhost:5213/api/Doctor', // replace with your API URL
     });
 
     // Attach JWT token automatically if present
@@ -58,6 +63,16 @@ export class DoctorService {
       params: { city, specializationId, minRating },
     });
   }
+
+    getSpecializations() {
+    return this.api.get<SpecializationDto[]>('/specializations');
+  }
+
+  // getting doctors list for the user to display
+  getAllDoctors() {
+  return this.api.get<DoctorDto[]>('/all');
+}
+
 
   // ========================= ADMIN SIDE ============================
   getDoctors() {

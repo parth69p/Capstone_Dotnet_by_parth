@@ -1,1 +1,22 @@
-<p>appointment-list-component works!</p>
+<div class="container my-4">
+  <h2 class="mb-4 text-center">My Appointments</h2>
+
+  <div *ngIf="loading" class="text-center my-3">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+  <div *ngIf="appointments.length === 0 && !loading" class="alert alert-info text-center">
+    No booked appointments found.
+  </div>
+
+  <div *ngIf="appointments.length > 0" class="list-group">
+    <div *ngFor="let app of appointments" class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        <strong>{{ app.doctorName }}</strong> ({{ app.timeSlot }} on {{ app.appointmentDate | date:'mediumDate' }}) - <em>{{ app.status }}</em>
+      </div>
+      <button class="btn btn-sm btn-danger" (click)="cancelAppointment(app.id)">Cancel</button>
+    </div>
+  </div>
+</div>

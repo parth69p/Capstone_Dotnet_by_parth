@@ -49,7 +49,7 @@ export class LoginComponent {
       if (role === 'Admin') {
         this.router.navigate(['/admin-dashboard-component']);
       } else {
-        this.router.navigate(['/doctor-search']);
+        this.router.navigate(['/specialist-selection']);
       }
     } catch (error) {
       console.error('Login failed', error);

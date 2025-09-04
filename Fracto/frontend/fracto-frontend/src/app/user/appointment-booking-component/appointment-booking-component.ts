@@ -1,11 +1,68 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AppointmentService, CreateAppointmentDto } from '../appointment-service';
+import { DoctorService, DoctorDto } from '../doctor-service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-appointment-booking-component',
-  imports: [],
+  selector: 'app-appointment-booking',
   templateUrl: './appointment-booking-component.html',
-  styleUrl: './appointment-booking-component.css'
+  imports: [FormsModule, CommonModule]
 })
-export class AppointmentBookingComponent {
+export class AppointmentBookingComponent implements OnInit {
+  doctors: DoctorDto[] = [];
+  selectedDoctorId: number = 0;
+  appointmentDate: string = '';
+  timeSlot: string = '';
+  errorMessage: string = '';
+  successMessage: string = '';
+  loading: boolean = false;
 
+  constructor(
+    private appointmentService: AppointmentService,
+    private doctorService: DoctorService
+  ) {}
+
+  ngOnInit() {
+    this.loadDoctors();
+  }
+
+  loadDoctors() {
+    this.loading = true;
+    this.doctorService.getAllDoctors()
+      .then(res => { this.doctors = res.data; })
+      .catch(err => console.error(err))
+      .finally(() => this.loading = false);
+  }
+
+  bookAppointment() {
+    if (!this.selectedDoctorId || !this.appointmentDate || !this.timeSlot) {
+      this.errorMessage = 'Please fill all fields.';
+      this.successMessage = '';
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const dto: CreateAppointmentDto = {
+      doctorId: this.selectedDoctorId,
+      appointmentDate: this.appointmentDate,
+      timeSlot: this.timeSlot
+    };
+
+    this.appointmentService.bookAppointment(dto)
+      .then(res => {
+        this.successMessage = 'Appointment booked successfully!';
+        this.selectedDoctorId = 0;
+        this.appointmentDate = '';
+        this.timeSlot = '';
+      })
+      .catch(err => {
+        console.error(err);
+        this.errorMessage = 'Failed to book appointment.';
+      })
+      .finally(() => this.loading = false);
+  }
 }

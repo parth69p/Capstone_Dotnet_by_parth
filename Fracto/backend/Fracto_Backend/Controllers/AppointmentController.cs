@@ -22,6 +22,7 @@ namespace Fracto.Backend.Controllers
 
         // POST: api/Appointments
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<AppointmentDto>> BookAppointment([FromBody] CreateAppointmentDto createDto)
         {
             // Get the current user's ID from the JWT token claims

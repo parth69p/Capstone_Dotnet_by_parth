@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class Specialization
 {
     [Key]
-    public int SpecializationId { get; set; }
+    public int specializationId { get; set; }
 
     [Required, MaxLength(100)]
     public string? specializationName { get; set; }

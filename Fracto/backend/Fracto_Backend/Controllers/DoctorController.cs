@@ -20,6 +20,8 @@ namespace Fracto.Backend.Controllers
 
         //================== USER SIDE ===================
         // GET: api/Doctors/search?city=NewYork&specializationId=1&minRating=4
+
+        
         [HttpGet("search")]
         [Authorize] // Any logged-in user can search
         public async Task<ActionResult<IEnumerable<DoctorDto>>> SearchDoctors([FromQuery] string city, [FromQuery] int specializationId, [FromQuery] double minRating = 0)
@@ -67,6 +69,46 @@ namespace Fracto.Backend.Controllers
             var cities = await _context.Doctors.Select(d => d.city).Distinct().ToListAsync();
             return Ok(cities);
         }
+
+
+        [HttpGet("specializations")]
+        public async Task<ActionResult<IEnumerable<object>>> GetSpecializations()
+        {
+            var specs = await _context.Specializations
+                .Select(s => new
+                {
+                    specializationId = s.specializationId,
+                    specializationName = s.specializationName
+                })
+                .ToListAsync();
+
+            return Ok(specs);
+
+        }
+
+        // for Displaying Records of doctors to the user 
+        [HttpGet("all")]
+[Authorize] // allow any logged-in user
+public async Task<ActionResult<IEnumerable<DoctorDto>>> GetAllDoctors()
+{
+    var doctors = await _context.Doctors
+        .Include(d => d.Specialization)
+        .Select(d => new DoctorDto
+        {
+            id = d.doctorId,
+            name = d.name ?? string.Empty,
+            city = d.city ?? string.Empty,
+            rating = d.rating,
+            profileImagePath = d.profileImagePath ?? string.Empty,
+            specializationId = d.specializationId,
+            specializationName = d.Specialization.specializationName ?? string.Empty
+        })
+        .ToListAsync();
+
+    return Ok(doctors);
+}
+
+
 
         //=================================== ADMIN SIDE ================================
 

@@ -1,1 +1,50 @@
-<p>specialist-selection-component works!</p>
+<div class="container my-4">
+  <h2 class="mb-4 text-center">Find a Doctor</h2>
+
+  <div class="row g-3 mb-3">
+    <!-- City Selection -->
+    <div class="col-md-4">
+      <label class="form-label fw-bold">City:</label>
+      <select class="form-select" [(ngModel)]="selectedCity">
+        <option value="">Select City</option>
+        <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+      </select>
+    </div>
+
+    <!-- Specialization Selection -->
+    <div class="col-md-4">
+      <label class="form-label fw-bold">Specialization:</label>
+      <select class="form-select" [(ngModel)]="selectedSpecializationId">
+        <option value="0">Select Specialization</option>
+        <option *ngFor="let spec of specializations" [value]="spec.specializationId">
+          {{ spec.specializationName }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Minimum Rating -->
+    <div class="col-md-2">
+      <label class="form-label fw-bold">Min Rating:</label>
+      <input type="number" min="0" max="5" class="form-control" [(ngModel)]="minRating" />
+    </div>
+
+    <!-- Buttons -->
+    <div class="col-md-2 d-flex align-items-end">
+      <button class="btn btn-primary me-2" (click)="SearchDoctors()">Search</button>
+      <!-- <button class="btn btn-secondary" (click)="clearFilters()">Clear</button> -->
+    </div>
+  </div>
+
+  <!-- Loading and Error -->
+  <div *ngIf="loading" class="text-center my-3">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Doctors List -->
+<app-doctor-list-component [doctors]="doctors"></app-doctor-list-component>
+

@@ -1,20 +1,32 @@
 using System.Text;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using System.Security.Claims;
+
 var builder = WebApplication.CreateBuilder(args);
 
-//Adding services
+// Add services
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IJwtService, JwtService>();
-
 builder.Services.AddScoped<IFileService, FileService>();
-// For Testing Using Swagger For Api (UserContoller)
+
 builder.Services.AddSwaggerGen();
 
+// ---------------- CORS ----------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200") // Angular dev URL
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+// ---------------- JWT Authentication ----------------
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -32,52 +44,38 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
-
-        // Add this line so the Role claim works correctly
         RoleClaimType = ClaimTypes.Role
     };
 });
 
-
-//-------------------------------------Adding Cors for the front end -------------------------------------
-// ---------------- CORS ----------------
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAngularDev", policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:4200") // your Angular dev URL
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
-
-// Add services to the container.
+// ---------------- Database ----------------
 builder.Services.AddDbContext<FractoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ---------------- OpenAPI/Swagger ----------------
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-
-// Configure the HTTP request pipeline.
+// ---------------- Middleware Pipeline ----------------
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapOpenApi();
 }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger(); // <-- ADD THIS LINE
-    app.UseSwaggerUI(); // <-- ADD THIS LINE
-}
 app.UseHttpsRedirection();
 
-// ---------------------------- Using Cors------------------------------
-
+// **Important: CORS must come BEFORE Authentication**
 app.UseCors("AllowAngularDev");
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+// ---------------- Example endpoint ----------------
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -96,8 +94,6 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
-
-app.MapControllers();
 
 app.Run();
 

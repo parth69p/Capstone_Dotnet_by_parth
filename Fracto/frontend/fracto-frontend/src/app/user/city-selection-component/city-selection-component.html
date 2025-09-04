@@ -1,12 +1,4 @@
-<div class="city-selection-container">
-  <h2>Select Your City</h2>
-  <form (ngSubmit)="onSubmit()">
-    <label for="city">City:</label>
-    <select id="city" [(ngModel)]="selectedCity" name="city" required>
-      <option value="" disabled selected>Select city</option>
-      <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
-    </select>
-
-    <button type="submit" [disabled]="!selectedCity">Next</button>
-  </form>
-</div>
+<label for="city">Select City:</label>
+<select id="city" [(ngModel)]="selectedCity" (change)="onCityChange()">
+  <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+</select>

@@ -1,1 +1,78 @@
-<router-outlet></router-outlet>
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm rounded p-3 mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fs-4" routerLink="/">🩺 Fracto</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-center">
+
+        <!-- Public Links -->
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a class="btn btn-outline-success me-2" routerLink="/login" routerLinkActive="active">Login</a>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a class="btn btn-outline-info me-2" routerLink="/register" routerLinkActive="active">Register</a>
+        </li>
+
+        <!-- User menu -->
+        <li class="nav-item" *ngIf="role==='User'">
+          <a class="btn btn-outline-primary me-2" routerLink="/specialist-selection" routerLinkActive="active">
+            <i class="bi bi-search me-1"></i> Search Doctors
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="role==='User'">
+          <a class="btn btn-outline-warning me-2" routerLink="/appointment-book" routerLinkActive="active">
+            <i class="bi bi-calendar-plus me-1"></i> Book Appointment
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="isLoggedIn && role==='User'">
+          <a class="btn btn-outline-secondary me-2" routerLink="/appointment-list" routerLinkActive="active">
+            <i class="bi bi-list-check me-1"></i> My Appointments
+          </a>
+        </li>
+
+        <!-- Admin menu as inline buttons -->
+        <ng-container *ngIf="role==='Admin'">
+          <li class="nav-item">
+            <a class="btn btn-outline-danger me-2" routerLink="/admin/users" routerLinkActive="active">
+              <i class="bi bi-people me-1"></i> Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-outline-danger me-2" routerLink="/admin/doctors" routerLinkActive="active">
+              <i class="bi bi-person-badge me-1"></i> Doctors
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-outline-danger me-2" routerLink="/admin/specializations" routerLinkActive="active">
+              <i class="bi bi-bookmark-check me-1"></i> Specializations
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-outline-danger" routerLink="/admin/appointments" routerLinkActive="active">
+              <i class="bi bi-calendar2-check me-1"></i> Appointments
+            </a>
+          </li>
+        </ng-container>
+
+      </ul>
+
+      <!-- Logout button -->
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item" *ngIf="isLoggedIn">
+          <a class="btn btn-outline-danger" href="#" (click)="logout()">
+            <i class="bi bi-box-arrow-right me-1"></i> Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Router outlet -->
+<div class="container mt-4">
+  <router-outlet></router-outlet>
+</div>

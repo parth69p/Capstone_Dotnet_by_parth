@@ -1,1 +1,37 @@
-<p>appointment-booking-component works!</p>
+<div class="container my-4">
+  <h2 class="mb-4 text-center">Book an Appointment</h2>
+
+  <div *ngIf="loading" class="text-center my-3">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+
+  <div class="card p-4 shadow-sm">
+    <div class="mb-3">
+      <label class="form-label">Select Doctor</label>
+      <select class="form-select" [(ngModel)]="selectedDoctorId">
+        <option value="0">Select Doctor</option>
+        <option *ngFor="let doc of doctors" [value]="doc.id">
+          {{ doc.name }} - {{ doc.specializationName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Appointment Date</label>
+      <input type="date" class="form-control" [(ngModel)]="appointmentDate" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Time Slot</label>
+      <input type="time" class="form-control" [(ngModel)]="timeSlot" />
+    </div>
+
+    <button class="btn btn-primary" (click)="bookAppointment()" [disabled]="loading">
+      {{ loading ? 'Booking...' : 'Book Appointment' }}
+    </button>
+  </div>
+</div>
