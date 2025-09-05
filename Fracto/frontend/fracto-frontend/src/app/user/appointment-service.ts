@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosInstance } from 'axios';
 
+// Must match backend DTO exactly
 export interface CreateAppointmentDto {
   doctorId: number;
-  appointmentDate: string; // YYYY-MM-DD
+  appointmentDate: string; // "YYYY-MM-DD"
   timeSlot: string;
 }
+
 
 export interface AppointmentDto {
   id: number;
@@ -31,7 +33,7 @@ export class AppointmentService {
 
     // Attach JWT token automatically
     this.api.interceptors.request.use(config => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken'); // match My AuthService
       if (token && config.headers) {
         config.headers['Authorization'] = `Bearer ${token}`;
       }
@@ -51,7 +53,7 @@ export class AppointmentService {
 
   // Cancel an appointment
   cancelAppointment(id: number) {
-    return this.api.put(`/` + id + `/cancel`);
+    return this.api.put(`/` + id + `/cancel`, {});
   }
 
   // Admin: Get all appointments

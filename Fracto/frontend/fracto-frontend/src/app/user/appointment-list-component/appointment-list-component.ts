@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentService, AppointmentDto } from '../appointment-service';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-appointment-list',
-  imports:[FormsModule,CommonModule],
-  templateUrl: './appointment-list-component.html'
+  templateUrl: './appointment-list-component.html',
+  styleUrls: ['./appointment-list-component.css'],
+  imports: [CommonModule, FormsModule]
 })
 export class AppointmentListComponent implements OnInit {
   appointments: AppointmentDto[] = [];
@@ -15,26 +16,36 @@ export class AppointmentListComponent implements OnInit {
 
   constructor(private appointmentService: AppointmentService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadAppointments();
   }
 
   loadAppointments() {
     this.loading = true;
+    this.errorMessage = '';
     this.appointmentService.getMyAppointments()
       .then(res => {
-        // Filter only booked appointments
-        this.appointments = res.data.filter(a => a.status === 'Booked');
+        this.appointments = res.data;
       })
-      .catch(err => this.errorMessage = 'Failed to load appointments.')
-      .finally(() => this.loading = false);
+      .catch(err => {
+        console.error(err);
+        this.errorMessage = 'Failed to load appointments.';
+      })
+      .finally(() => {
+        this.loading = false;
+      });
   }
 
-  cancelAppointment(id: number) {
+  cancelAppointment(appointmentId: number) {
     if (!confirm('Are you sure you want to cancel this appointment?')) return;
 
-    this.appointmentService.cancelAppointment(id)
-      .then(() => this.loadAppointments())
-      .catch(err => alert('Failed to cancel appointment.'));
+    this.appointmentService.cancelAppointment(appointmentId)
+      .then(() => {
+        this.appointments = this.appointments.filter(a => a.id !== appointmentId);
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Failed to cancel appointment.');
+      });
   }
 }

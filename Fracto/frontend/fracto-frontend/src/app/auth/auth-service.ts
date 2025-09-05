@@ -49,6 +49,8 @@ export class AuthService {
         // Save token and role
         localStorage.setItem('authToken', response.data.token);
         localStorage.setItem('userRole', response.data.role);
+        localStorage.setItem('userId', response.data.userId);
+        localStorage.setItem('userName', response.data.userName);
 
         // Update subjects to notify subscribers
         this.isLoggedInSubject.next(true);
@@ -65,6 +67,8 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
     this.isLoggedInSubject.next(false);
     this.roleSubject.next(null);
     this.router.navigate(['/login']);
@@ -76,5 +80,11 @@ export class AuthService {
 
   getRole(): string | null {
     return localStorage.getItem('userRole');
+  }
+  getUserId(): string | null {
+    return localStorage.getItem('userId');
+  }
+  getUserName(): string | null {
+    return localStorage.getItem('userName');
   }
 }

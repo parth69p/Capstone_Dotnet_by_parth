@@ -5,6 +5,8 @@ import { SpecialistSelectionComponent } from './user/specialist-selection-compon
 import { AppointmentBookingComponent } from './user/appointment-booking-component/appointment-booking-component';
 import { AppointmentListComponent } from './user/appointment-list-component/appointment-list-component';
 import { AdminDashboardComponent } from './admin/admin-dashboard-component/admin-dashboard-component';
+import { AppointmentManagementComponent } from './admin/appointment-management-component/appointment-management-component';
+import { UserManagementComponent } from './admin/user-management-component/user-management-component';
 export const routes: Routes = [
     
     // 👇 Default route (empty URL) redirects to login
@@ -14,7 +16,8 @@ export const routes: Routes = [
   {path:'appointment-book',component: AppointmentBookingComponent},
   {path:'appointment-list', component:AppointmentListComponent},
   {path:'admin-dashboard', component:AdminDashboardComponent},
-
+  {path:'appointment-management', component:AppointmentManagementComponent},
+  {path:'user-management',component:UserManagementComponent},
 
   // Lazy load auth module
   {

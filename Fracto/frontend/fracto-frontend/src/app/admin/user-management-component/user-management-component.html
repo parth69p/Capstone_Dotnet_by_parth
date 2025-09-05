@@ -1,1 +1,103 @@
-<p>user-management-component works!</p>
+<div class="container my-4">
+  <h2 class="mb-4 text-center">User Management</h2>
+
+  <!-- Alerts -->
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+  <!-- Create User Form -->
+  <div class="card p-4 mb-4 shadow-sm" *ngIf="!selectedUser">
+    <h4>Create New User</h4>
+    <form #userFormRef="ngForm" (ngSubmit)="createUser(userFormRef)">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" [(ngModel)]="userForm.username" name="username" required minlength="3" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" [(ngModel)]="userForm.password" name="password" required minlength="6" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select class="form-select" [(ngModel)]="userForm.role" name="role" required>
+          <option value="User">User</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Profile Image (optional)</label>
+        <input type="file" class="form-control" (change)="onFileSelected($event)" />
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        {{ loading ? 'Creating...' : 'Create User' }}
+      </button>
+    </form>
+  </div>
+
+  <!-- Edit User Form -->
+  <div class="card p-4 mb-4 shadow-sm" *ngIf="selectedUser">
+    <h4>Edit User (ID: {{ selectedUser.id }})</h4>
+    <form #editFormRef="ngForm" (ngSubmit)="updateUser(editFormRef)">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" [(ngModel)]="selectedUser.username" name="username" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select class="form-select" [(ngModel)]="selectedUser.role" name="role" required>
+          <option value="User">User</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Profile Image</label>
+        <input type="file" class="form-control" (change)="onFileSelected($event)" />
+      </div>
+
+      <button type="submit" class="btn btn-success" [disabled]="loading">
+        {{ loading ? 'Updating...' : 'Update User' }}
+      </button>
+      <button type="button" class="btn btn-secondary ms-2" (click)="cancelEdit()">Cancel</button>
+    </form>
+  </div>
+
+  <!-- Users Table -->
+  <div class="card p-4 shadow-sm">
+    <h4>Existing Users</h4>
+    <table class="table table-striped mt-3" *ngIf="users.length > 0; else noUsers">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Profile</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.role }}</td>
+          <td>
+            <img *ngIf="user.profileImagePath" [src]="'https://localhost:5213/'+ user.profileImagePath" alt="Profile" width="50" height="50" class="rounded-circle" />
+          </td>
+          <td>
+            <button class="btn btn-warning btn-sm me-2" (click)="editUser(user)">Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noUsers>
+      <p>No users found.</p>
+    </ng-template>
+  </div>
+</div>

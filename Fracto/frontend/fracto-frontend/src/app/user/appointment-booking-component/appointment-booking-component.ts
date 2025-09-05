@@ -3,6 +3,7 @@ import { AppointmentService, CreateAppointmentDto } from '../appointment-service
 import { DoctorService, DoctorDto } from '../doctor-service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../auth/auth-service';
 
 @Component({
   selector: 'app-appointment-booking',
@@ -20,7 +21,8 @@ export class AppointmentBookingComponent implements OnInit {
 
   constructor(
     private appointmentService: AppointmentService,
-    private doctorService: DoctorService
+    private doctorService: DoctorService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -35,34 +37,43 @@ export class AppointmentBookingComponent implements OnInit {
       .finally(() => this.loading = false);
   }
 
-  bookAppointment() {
-    if (!this.selectedDoctorId || !this.appointmentDate || !this.timeSlot) {
-      this.errorMessage = 'Please fill all fields.';
-      this.successMessage = '';
-      return;
-    }
-
-    this.loading = true;
-    this.errorMessage = '';
+bookAppointment() {
+  if (!this.selectedDoctorId || !this.appointmentDate || !this.timeSlot) {
+    this.errorMessage = 'Please fill all fields.';
     this.successMessage = '';
+    return;
+  }
 
-    const dto: CreateAppointmentDto = {
-      doctorId: this.selectedDoctorId,
-      appointmentDate: this.appointmentDate,
-      timeSlot: this.timeSlot
-    };
+  this.loading = true;
+  this.errorMessage = '';
+  this.successMessage = '';
 
+  const dto: CreateAppointmentDto = {
+    doctorId: this.selectedDoctorId,
+    appointmentDate: this.appointmentDate,
+    timeSlot: this.timeSlot
+  };
+  // if date is of past it should not be done 
+  const today = new Date();
+  const selectedDate = new Date(this.appointmentDate);
+  if (selectedDate < today) {
+    this.errorMessage = 'Cannot book appointment in the past.';
+    this.successMessage = '';
+  } 
+  else {
     this.appointmentService.bookAppointment(dto)
       .then(res => {
         this.successMessage = 'Appointment booked successfully!';
         this.selectedDoctorId = 0;
         this.appointmentDate = '';
-        this.timeSlot = '';
-      })
-      .catch(err => {
-        console.error(err);
-        this.errorMessage = 'Failed to book appointment.';
-      })
-      .finally(() => this.loading = false);
+      this.timeSlot = '';
+    })
+    .catch(err => {
+      console.error(err);
+      this.errorMessage = 'Failed to book appointment.';
+    })
+    .finally(() => this.loading = false);
   }
+
+}
 }

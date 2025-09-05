@@ -7,5 +7,5 @@ public class UserDto
     public string? username { get; set; }
     public string? role { get; set; }
 
-    public string? profileImage { get; set; }
+    public string? profileImagePath { get; set; }
 }

@@ -45,9 +45,11 @@ export class LoginComponent {
       console.log('Login successful', response);
 
       // Navigate based on role
+
+
       const role = this.authService.getRole();
       if (role === 'Admin') {
-        this.router.navigate(['/admin-dashboard-component']);
+        this.router.navigate(['/admin-dashboard']);
       } else {
         this.router.navigate(['/specialist-selection']);
       }

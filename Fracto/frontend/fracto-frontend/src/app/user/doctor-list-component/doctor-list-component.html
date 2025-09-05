@@ -1,7 +1,7 @@
  <div *ngIf="doctors.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     <div *ngFor="let doc of doctors" class="col">
       <div class="card h-100 shadow-sm">
-        <img *ngIf="doc.profileImagePath" [src]="doc.profileImagePath" class="card-img-top" alt="Profile" />
+        <img *ngIf="doc.profileImagePath" [src]="doc.profileImagePath" class="card-img-top" alt="Profile"/>
         <div class="card-body">
           <h5 class="card-title">{{ doc.name }}</h5>
           <p class="card-text mb-1"><strong>City:</strong> {{ doc.city }}</p>

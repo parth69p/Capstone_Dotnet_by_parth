@@ -44,9 +44,13 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(key),
+
+        // 👇 Add these two
+        NameClaimType = ClaimTypes.NameIdentifier,
         RoleClaimType = ClaimTypes.Role
     };
 });
+
 
 // ---------------- Database ----------------
 builder.Services.AddDbContext<FractoDbContext>(options =>
@@ -66,6 +70,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 // **Important: CORS must come BEFORE Authentication**
 app.UseCors("AllowAngularDev");

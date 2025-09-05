@@ -12,32 +12,32 @@ public class JwtService : IJwtService
         _configuration = configuration;
     }
 
-    public string GenerateToken(User user)
+  public string GenerateToken(User user)
+{
+    // JWT claims
+    var claims = new[]
     {
-        // JWT claims
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.userId.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.username!),
-            new Claim(ClaimTypes.Role, user.role!),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+        new Claim(ClaimTypes.NameIdentifier, user.userId.ToString()), // ✅ Add this line
+        new Claim(ClaimTypes.Name, user.username!),                  // ✅ Standard name claim
+        new Claim(ClaimTypes.Role, user.role!),                      // Role for authorization
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
 
-        // Secret key from appsettings.json
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    // Secret key from appsettings.json
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        // Token expiration
-        var expires = DateTime.UtcNow.AddDays(5); // you can adjust
+    // Token expiration
+    var expires = DateTime.UtcNow.AddDays(5);
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: expires,
-            signingCredentials: creds
-        );
+    var token = new JwtSecurityToken(
+        issuer: _configuration["Jwt:Issuer"],
+        audience: _configuration["Jwt:Audience"],
+        claims: claims,
+        expires: expires,
+        signingCredentials: creds
+    );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
+    return new JwtSecurityTokenHandler().WriteToken(token);
+}
 }

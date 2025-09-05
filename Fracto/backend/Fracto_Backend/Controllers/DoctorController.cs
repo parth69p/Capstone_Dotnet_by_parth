@@ -21,7 +21,7 @@ namespace Fracto.Backend.Controllers
         //================== USER SIDE ===================
         // GET: api/Doctors/search?city=NewYork&specializationId=1&minRating=4
 
-        
+
         [HttpGet("search")]
         [Authorize] // Any logged-in user can search
         public async Task<ActionResult<IEnumerable<DoctorDto>>> SearchDoctors([FromQuery] string city, [FromQuery] int specializationId, [FromQuery] double minRating = 0)
@@ -88,36 +88,10 @@ namespace Fracto.Backend.Controllers
 
         // for Displaying Records of doctors to the user 
         [HttpGet("all")]
-[Authorize] // allow any logged-in user
-public async Task<ActionResult<IEnumerable<DoctorDto>>> GetAllDoctors()
-{
-    var doctors = await _context.Doctors
-        .Include(d => d.Specialization)
-        .Select(d => new DoctorDto
+        [Authorize] // allow any logged-in user
+        public async Task<ActionResult<IEnumerable<DoctorDto>>> GetAllDoctors()
         {
-            id = d.doctorId,
-            name = d.name ?? string.Empty,
-            city = d.city ?? string.Empty,
-            rating = d.rating,
-            profileImagePath = d.profileImagePath ?? string.Empty,
-            specializationId = d.specializationId,
-            specializationName = d.Specialization.specializationName ?? string.Empty
-        })
-        .ToListAsync();
-
-    return Ok(doctors);
-}
-
-
-
-        //=================================== ADMIN SIDE ================================
-
-        // GET: api/Doctors
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<DoctorDto>>> GetDoctors()
-        {
-            return await _context.Doctors
+            var doctors = await _context.Doctors
                 .Include(d => d.Specialization)
                 .Select(d => new DoctorDto
                 {
@@ -125,95 +99,18 @@ public async Task<ActionResult<IEnumerable<DoctorDto>>> GetAllDoctors()
                     name = d.name ?? string.Empty,
                     city = d.city ?? string.Empty,
                     rating = d.rating,
-                    profileImagePath = d.profileImagePath,
+                    profileImagePath = d.profileImagePath ?? string.Empty,
                     specializationId = d.specializationId,
                     specializationName = d.Specialization.specializationName ?? string.Empty
                 })
                 .ToListAsync();
+
+            return Ok(doctors);
         }
 
-        // POST: api/Doctors
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<DoctorDto>> CreateDoctor([FromForm] CreateDoctorDto createDto, IFormFile? profileImage)
-        {
-            var doctor = new Doctor
-            {
-                name = createDto.name,
-                city = createDto.city,
-                specializationId = createDto.specializationId,
-                rating = 0 // New doctors start with a 0 rating
-            };
 
-            if (profileImage != null)
-            {
-                doctor.profileImagePath = await _fileService.SaveImageAsync(profileImage, "doctors");
-            }
 
-            await _context.Doctors.AddAsync(doctor);
-            await _context.SaveChangesAsync();
+        //=================================== ADMIN SIDE ================================
 
-            // Reload the Specialization navigation property to return it in the DTO
-            await _context.Entry(doctor).Reference(d => d.Specialization).LoadAsync();
-
-            var doctorDto = new DoctorDto
-            {
-                id = doctor.doctorId,
-                name = doctor.name ?? string.Empty,
-                city = doctor.city ?? string.Empty,
-                rating = doctor.rating,
-                profileImagePath = doctor.profileImagePath ?? string.Empty,
-                specializationId = doctor.specializationId,
-                specializationName = doctor.Specialization.specializationName ?? string.Empty
-            };
-
-            return CreatedAtAction(nameof(GetDoctors), new { id = doctor.doctorId }, doctorDto);
-        }
-
-        // PUT: api/Doctors/5
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateDoctor(int id, [FromForm] UpdateDoctorDto updateDto, IFormFile? profileImage)
-        {
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor == null) return NotFound();
-
-            doctor.name = updateDto.name;
-            doctor.city = updateDto.city;
-            doctor.specializationId = updateDto.specializationId;
-
-            if (profileImage != null)
-            {
-                if (!string.IsNullOrEmpty(doctor.profileImagePath))
-                {
-                    _fileService.DeleteImage(doctor.profileImagePath);
-                }
-                doctor.profileImagePath = await _fileService.SaveImageAsync(profileImage, "doctors");
-            }
-
-            _context.Entry(doctor).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return Ok("Doctor updated successfully.");
-        }
-
-        // DELETE: api/Doctors/5
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteDoctor(int id)
-        {
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor == null) return NotFound();
-
-            if (!string.IsNullOrEmpty(doctor.profileImagePath))
-            {
-                _fileService.DeleteImage(doctor.profileImagePath);
-            }
-
-            _context.Doctors.Remove(doctor);
-            await _context.SaveChangesAsync();
-
-            return Ok("Doctor deleted successfully.");
-        }
     }
 }

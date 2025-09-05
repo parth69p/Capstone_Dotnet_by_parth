@@ -7,16 +7,35 @@
 
   <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
-  <div *ngIf="appointments.length === 0 && !loading" class="alert alert-info text-center">
-    No booked appointments found.
-  </div>
+  <table class="table table-bordered table-hover" *ngIf="appointments.length && !loading">
+    <thead>
+      <tr>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Time Slot</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let appointment of appointments">
+        <td>{{ appointment.doctorName }}</td>
+        <td>{{ appointment.appointmentDate | date:'yyyy-MM-dd' }}</td>
+        <td>{{ appointment.timeSlot }}</td>
+        <td>{{ appointment.status }}</td>
+        <td>
+          <button 
+            class="btn btn-sm btn-danger" 
+            (click)="cancelAppointment(appointment.id)" 
+            [disabled]="appointment.status !== 'Pending'">
+            Cancel
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-  <div *ngIf="appointments.length > 0" class="list-group">
-    <div *ngFor="let app of appointments" class="list-group-item d-flex justify-content-between align-items-center">
-      <div>
-        <strong>{{ app.doctorName }}</strong> ({{ app.timeSlot }} on {{ app.appointmentDate | date:'mediumDate' }}) - <em>{{ app.status }}</em>
-      </div>
-      <button class="btn btn-sm btn-danger" (click)="cancelAppointment(app.id)">Cancel</button>
-    </div>
+  <div *ngIf="!appointments.length && !loading" class="text-center my-3">
+    No appointments booked yet.
   </div>
 </div>
