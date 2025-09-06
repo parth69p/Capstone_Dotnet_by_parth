@@ -1,0 +1,70 @@
+<div class="container my-4">
+  <h2 class="text-center text-primary fw-bold mb-4">Specialization Management</h2>
+
+  <!-- Form -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form (ngSubmit)="saveSpecialization()" class="row g-3 align-items-center">
+        <div class="col-md-8">
+          <label class="form-label fw-bold">Specialization Name</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="specializationForm.name"
+            name="specializationName"
+            required
+          />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary me-2 w-100">
+            {{ isEditing ? 'Update' : 'Add' }}
+          </button>
+          <button type="button" class="btn btn-secondary w-100" (click)="resetForm()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+  <!-- Table -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="mb-3 text-secondary">All Specializations</h5>
+      <div *ngIf="loading" class="text-center my-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      <table class="table table-bordered table-hover align-middle" *ngIf="!loading">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of specializations; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ s.specializationName }}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary me-2" (click)="editSpecialization(s)">
+                <i class="bi bi-pencil"></i> Edit
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="deleteSpecialization(s.specializationId)">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="specializations.length === 0">
+            <td colspan="3" class="text-center text-muted">No specializations found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

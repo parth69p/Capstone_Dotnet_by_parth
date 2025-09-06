@@ -1,35 +1,43 @@
 <div class="container my-4 appointments-container">
-  <h2 class="mb-4 text-center">Appointments Management</h2>
+  <h2 class="mb-4 text-center text-primary fw-bold">🗓️ Appointments Management</h2>
+
   <!-- Update form -->
-  <div *ngIf="selectedAppointment" class="card mt-4 p-4 shadow-sm update-form">
-    <h3 class="mb-3">Update Appointment (ID: {{ selectedAppointment.id }})</h3>
+  <div *ngIf="selectedAppointment" class="card border-0 shadow p-4 mb-4 rounded-3">
+    <h4 class="mb-3 text-primary fw-semibold">
+      Update Appointment (ID: {{ selectedAppointment.id }})
+    </h4>
 
     <form (ngSubmit)="submitUpdate()" class="row g-3">
       <div class="col-md-4">
-        <label class="form-label">Date:</label>
+        <label class="form-label fw-semibold text-muted">Date:</label>
         <input
           type="date"
           [(ngModel)]="selectedAppointment.appointmentDate"
           name="appointmentDate"
-          class="form-control"
+          class="form-control rounded-pill shadow-sm"
           required
         />
       </div>
 
       <div class="col-md-4">
-        <label class="form-label">Time Slot:</label>
+        <label class="form-label fw-semibold text-muted">Time Slot:</label>
         <input
           type="text"
           [(ngModel)]="selectedAppointment.timeSlot"
           name="timeSlot"
-          class="form-control"
+          class="form-control rounded-pill shadow-sm"
+          placeholder="e.g. 10:00 AM - 11:00 AM"
           required
         />
       </div>
 
       <div class="col-md-4">
-        <label class="form-label">Status:</label>
-        <select [(ngModel)]="selectedAppointment.status" name="status" class="form-select">
+        <label class="form-label fw-semibold text-muted">Status:</label>
+        <select
+          [(ngModel)]="selectedAppointment.status"
+          name="status"
+          class="form-select rounded-pill shadow-sm"
+        >
           <option value="Pending">Pending</option>
           <option value="Confirmed">Confirmed</option>
           <option value="Cancelled">Cancelled</option>
@@ -37,64 +45,79 @@
       </div>
 
       <div class="col-12 mt-3 d-flex gap-2">
-        <button type="submit" class="btn btn-success">Save</button>
-        <button type="button" class="btn btn-secondary" (click)="selectedAppointment = null">
-          Cancel
+        <button type="submit" class="btn btn-primary px-4 rounded-pill shadow-sm">
+          💾 Save
+        </button>
+        <button
+          type="button"
+          class="btn btn-light border px-4 rounded-pill shadow-sm"
+          (click)="selectedAppointment = null"
+        >
+          ❌ Cancel
         </button>
       </div>
     </form>
   </div>
-</div>
 
   <!-- Table of appointments -->
-  <div class="table-responsive" *ngIf="appointments.length > 0; else noAppointments">
-    <table class="table table-striped table-hover align-middle appointments-table">
-      <thead class="table-dark">
-        <tr>
-          <th>ID</th>
-          <th>User</th>
-          <th>Doctor</th>
-          <th>Date</th>
-          <th>Time Slot</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let appt of appointments">
-          <td>{{ appt.id }}</td>
-          <td>{{ appt.userName }}</td>
-          <td>{{ appt.doctorName }}</td>
-          <td>{{ appt.appointmentDate | date:'shortDate' }}</td>
-          <td>{{ appt.timeSlot }}</td>
-          <td>
-            <span 
-              class="badge" 
-              [ngClass]="{
-                'bg-warning text-dark': appt.status === 'Pending',
-                'bg-success': appt.status === 'Confirmed',
-                'bg-danger': appt.status === 'Cancelled'
-              }">
-              {{ appt.status }}
-            </span>
-          </td>
-          <td>
-            <button class="btn btn-sm btn-danger me-2" 
-                    (click)="cancelAppointment(appt.id)" 
-                    [disabled]="appt.status === 'Cancelled'">
-              Cancel
-            </button>
-            <button class="btn btn-sm btn-primary" (click)="openUpdateForm(appt)">
-              Update
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="card border-0 shadow rounded-3">
+    <div class="card-body p-0">
+      <div class="table-responsive" *ngIf="appointments.length > 0; else noAppointments">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-primary text-dark">
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Doctor</th>
+              <th>Date</th>
+              <th>Time Slot</th>
+              <th>Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let appt of appointments">
+              <td class="fw-semibold text-muted">{{ appt.id }}</td>
+              <td>{{ appt.userName }}</td>
+              <td class="fw-semibold text-primary">{{ appt.doctorName }}</td>
+              <td>{{ appt.appointmentDate | date: 'mediumDate' }}</td>
+              <td>{{ appt.timeSlot }}</td>
+              <td>
+                <span
+                  class="badge px-3 py-2 rounded-pill shadow-sm"
+                  [ngClass]="{
+                    'bg-warning text-dark': appt.status === 'Pending',
+                    'bg-success': appt.status === 'Confirmed',
+                    'bg-danger': appt.status === 'Cancelled'
+                  }"
+                >
+                  {{ appt.status }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button
+                  class="btn btn-sm btn-outline-danger rounded-pill px-3 me-2"
+                  (click)="cancelAppointment(appt.id)"
+                  [disabled]="appt.status === 'Cancelled'"
+                >
+                  ❌ Cancel
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                  (click)="openUpdateForm(appt)"
+                >
+                  ✏️ Update
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Message if no appointments -->
+      <ng-template #noAppointments>
+        <p class="text-center text-muted py-4">No appointments found.</p>
+      </ng-template>
+    </div>
   </div>
-
-  <!-- Message if no appointments -->
-  <ng-template #noAppointments>
-    <p class="text-center text-muted">No appointments found.</p>
-  </ng-template>
-
+</div>

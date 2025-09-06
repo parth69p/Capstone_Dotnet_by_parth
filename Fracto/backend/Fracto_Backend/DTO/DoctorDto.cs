@@ -11,12 +11,15 @@
         public string specializationName { get; set; } = string.Empty;
     }
 
-    // DTO for creating a new doctor (Admin)
-    public class CreateDoctorDto
-    {
-        public string name { get; set; } = string.Empty;
-        public string city { get; set; } = string.Empty;
-        public int specializationId { get; set; }
+// DTO for creating a new doctor (Admin)
+public class CreateDoctorDto
+{
+    public string name { get; set; } = string.Empty;
+    public string city { get; set; } = string.Empty;
+    public int specializationId { get; set; }
+
+    public double rating { get; set; } = 4.2;
+        
     }
 
     // DTO for updating a doctor (Admin)

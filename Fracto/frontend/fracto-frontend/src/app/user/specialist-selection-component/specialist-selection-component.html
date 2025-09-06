@@ -1,19 +1,17 @@
 <div class="container my-4">
-  <h2 class="mb-4 text-center">Find a Doctor</h2>
+  <h2 class="mb-4 text-center text-primary fw-bold">🔍 Find a Doctor</h2>
 
-  <div class="row g-3 mb-3">
-    <!-- City Selection -->
+  <div class="row g-3 mb-4 p-3 bg-white shadow-sm rounded">
     <div class="col-md-4">
-      <label class="form-label fw-bold">City:</label>
+      <label class="form-label fw-bold text-secondary">City</label>
       <select class="form-select" [(ngModel)]="selectedCity">
         <option value="">Select City</option>
         <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
       </select>
     </div>
 
-    <!-- Specialization Selection -->
     <div class="col-md-4">
-      <label class="form-label fw-bold">Specialization:</label>
+      <label class="form-label fw-bold text-secondary">Specialization</label>
       <select class="form-select" [(ngModel)]="selectedSpecializationId">
         <option value="0">Select Specialization</option>
         <option *ngFor="let spec of specializations" [value]="spec.specializationId">
@@ -22,20 +20,18 @@
       </select>
     </div>
 
-    <!-- Minimum Rating -->
     <div class="col-md-2">
-      <label class="form-label fw-bold">Min Rating:</label>
+      <label class="form-label fw-bold text-secondary">Min Rating</label>
       <input type="number" min="0" max="5" class="form-control" [(ngModel)]="minRating" />
     </div>
 
-    <!-- Buttons -->
     <div class="col-md-2 d-flex align-items-end">
-      <button class="btn btn-primary me-2" (click)="SearchDoctors()">Search</button>
-      <!-- <button class="btn btn-secondary" (click)="clearFilters()">Clear</button> -->
+      <button class="btn btn-primary w-100" (click)="SearchDoctors()">
+        <i class="bi bi-search me-1"></i> Search
+      </button>
     </div>
   </div>
 
-  <!-- Loading and Error -->
   <div *ngIf="loading" class="text-center my-3">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading...</span>
@@ -45,6 +41,5 @@
     {{ errorMessage }}
   </div>
 
-  <!-- Doctors List -->
-<app-doctor-list-component [doctors]="doctors"></app-doctor-list-component>
-
+  <app-doctor-list-component [doctors]="doctors"></app-doctor-list-component>
+</div>

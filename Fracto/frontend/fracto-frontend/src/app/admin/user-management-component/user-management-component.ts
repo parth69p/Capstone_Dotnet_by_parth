@@ -95,18 +95,20 @@ async updateUser(form: NgForm) {
     if (this.selectedFile) formData.append('profileImage', this.selectedFile);
 
     const res = await this.adminService.updateUser(this.selectedUser.id, formData);
+
     this.successMessage = res.message || 'User updated successfully!';
     this.selectedUser = null;
     this.selectedFile = null;
-    form.resetForm();
+    form.resetForm({ role: 'User' }); // Reset role to default
     this.loadUsers();
   } catch (err: any) {
-    this.errorMessage = err.response?.data || 'Failed to update user.';
+    this.errorMessage = err.response?.data?.message || 'Failed to update user.';
     console.error(err);
   } finally {
     this.loading = false;
   }
 }
+
 
   cancelEdit() {
     this.selectedUser = null;

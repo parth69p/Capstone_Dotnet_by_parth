@@ -11,5 +11,6 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './doctor-list-component.css'
 })
 export class DoctorListComponent {
-@Input() doctors: DoctorDto[] = [];
+  private baseUrl = 'https://localhost:5213/';
+  @Input() doctors: DoctorDto[] = [];
 }

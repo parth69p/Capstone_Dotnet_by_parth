@@ -5,7 +5,7 @@ import axios, { AxiosInstance } from 'axios';
   providedIn: 'root'
 })
 export class AdminService {
-  private baseUrl = 'https://localhost:5213/api/Admin'; // ⚡ Update if needed
+  private baseUrl = 'https://localhost:5213/api/Admin';
   private axiosInstance: AxiosInstance;
 
   constructor() {
@@ -13,9 +13,9 @@ export class AdminService {
       baseURL: this.baseUrl
     });
 
-    // Attach JWT token to all requests automatically
+    // Attach JWT token automatically
     this.axiosInstance.interceptors.request.use(config => {
-      const token = localStorage.getItem('token'); // Or sessionStorage
+      const token = localStorage.getItem('token');
       if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
       }
@@ -23,25 +23,20 @@ export class AdminService {
     });
   }
 
-  // ================= USERS =================
+  // ================= USERS ==========================
   async getAllUsers(): Promise<any[]> {
     const res = await this.axiosInstance.get('/users');
     return res.data;
   }
 
-async createUser(formData: FormData): Promise<any> {
-  const res = await this.axiosInstance.post('/users', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' } // ⚡ Important
-  });
-  return res.data;
-}
+  async createUser(formData: FormData): Promise<any> {
+    //  Keep FormData for file uploads
+    const res = await this.axiosInstance.post('/users', formData);
+    return res.data;
+  }
 
-//json data is returning
-
-async updateUser(id: number, formData: FormData): Promise<any> {
-  const res = await this.axiosInstance.put(`/users/${id}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  });
+  async updateUser(id: number, formData: FormData): Promise<any> {
+  const res = await this.axiosInstance.post(`/users/${id}`, formData);
   return res.data;
 }
 
@@ -50,7 +45,7 @@ async updateUser(id: number, formData: FormData): Promise<any> {
     return res.data;
   }
 
-  // ================= DOCTORS =================
+  // =========================== DOCTORS =============================
   async getAllDoctors(): Promise<any[]> {
     const res = await this.axiosInstance.get('/doctors');
     return res.data;
@@ -62,16 +57,12 @@ async updateUser(id: number, formData: FormData): Promise<any> {
   }
 
   async createDoctor(formData: FormData): Promise<any> {
-    const res = await this.axiosInstance.post('/doctors', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    const res = await this.axiosInstance.post('/doctors', formData);
     return res.data;
   }
 
   async updateDoctor(id: number, formData: FormData): Promise<any> {
-    const res = await this.axiosInstance.put(`/doctors/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    const res = await this.axiosInstance.put(`/doctors/${id}`, formData);
     return res.data;
   }
 
@@ -95,4 +86,31 @@ async updateUser(id: number, formData: FormData): Promise<any> {
     const res = await this.axiosInstance.put(`/${id}/admin-update`, appointment);
     return res.data;
   }
+
+  // ================= SPECIALIZATIONS ===================
+async getAllSpecializations(): Promise<any[]> {
+  const res = await this.axiosInstance.get('/specializations');
+  return res.data;
+}
+
+async createSpecialization(name: string): Promise<any> {
+  const res = await this.axiosInstance.post('/specializations', {
+    specializationName: name
+  });
+  return res.data;
+}
+
+async deleteSpecialization(id: number): Promise<any> {
+  const res = await this.axiosInstance.delete(`/specializations/${id}`);
+  return res.data;
+}
+
+async updateSpecialization(id: number, name: string): Promise<any> {
+  const res = await this.axiosInstance.put(`/specializations/${id}`, {
+    specializationId: id,                // ✅ must match backend DTO
+    specializationName: name
+  });
+  return res.data;
+}
+
 }

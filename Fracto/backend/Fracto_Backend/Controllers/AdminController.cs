@@ -62,23 +62,39 @@ public class AdminController : ControllerBase
         return Ok(new { message = "User created successfully.", userId = user.userId });
     }
 
-    // PUT: api/Admin/users/{id}
-    [HttpPut("users/{id}")]
+    // POST: api/Admin/users/{id}
+    // Using POST for FormData update (PUT sometimes fails with FormData)
+    [HttpPost("users/{id}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateUser(int id, [FromForm] UserDto userDto)
+    public async Task<IActionResult> UpdateUser(int id, [FromForm] UserDto userDto, IFormFile? profileImage)
     {
         var existingUser = await _context.Users.FindAsync(id);
-        if (existingUser == null) return NotFound();
+        if (existingUser == null)
+            return NotFound(new { message = "User not found." });
 
+        // Update basic properties
         existingUser.username = userDto.username ?? existingUser.username;
         existingUser.role = userDto.role ?? existingUser.role;
-        existingUser.profileImagePath = userDto.profileImagePath ?? existingUser.profileImagePath;
+
+        // Handle profile image upload
+        if (profileImage != null && profileImage.Length > 0)
+        {
+            // Delete old image if exists
+            if (!string.IsNullOrEmpty(existingUser.profileImagePath))
+                _fileService.DeleteImage(existingUser.profileImagePath);
+
+            // Save new image
+            existingUser.profileImagePath = await _fileService.SaveImageAsync(profileImage, "users");
+        }
 
         _context.Users.Update(existingUser);
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        // Return object with message
+        return Ok(new { message = "User updated successfully." });
     }
+
+
 
     // DELETE: api/Admin/users/{id}
     [HttpDelete("users/{id}")]
@@ -115,7 +131,9 @@ public class AdminController : ControllerBase
                 name = d.name ?? string.Empty,
                 specializationId = d.specializationId,
                 specializationName = d.Specialization != null ? d.Specialization.specializationName ?? string.Empty : "N/A",
-                profileImagePath = d.profileImagePath
+                profileImagePath = d.profileImagePath,
+                rating = d.rating,
+                city = d.city ?? string.Empty
             })
             .ToListAsync();
     }
@@ -150,7 +168,7 @@ public class AdminController : ControllerBase
             name = createDto.name,
             city = createDto.city,
             specializationId = createDto.specializationId,
-            rating = 0
+            rating = createDto.rating
         };
 
         if (profileImage != null)
@@ -248,43 +266,102 @@ public class AdminController : ControllerBase
             .ToListAsync();
     }
 
+    // Admin can cancel any user's appointment
+    [Authorize(Roles = "Admin")]
+    [HttpPut("{id}/admin-cancel")]
+    public async Task<IActionResult> CancelAppointmentByAdmin(int id)
+    {
+        var appointment = await _context.Appointments.FindAsync(id);
+        if (appointment == null) return NotFound("Appointment not found.");
 
-    // ================= ADMIN SIDE =================
-// ================= ADMIN SIDE =================
+        appointment.status = "Cancelled";
+        _context.Entry(appointment).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
 
-// Admin can cancel any user's appointment
+        return Ok("Appointment cancelled successfully by Admin.");
+    }
+
+    // Admin can update/edit any appointment
+    [Authorize(Roles = "Admin")]
+    [HttpPut("{id}/admin-update")]
+    public async Task<IActionResult> UpdateAppointmentByAdmin(int id, [FromBody] AppointmentDto updateDto)
+    {
+        var appointment = await _context.Appointments.FindAsync(id);
+        if (appointment == null) return NotFound("Appointment not found.");
+
+        // Update appointment fields using AppointmentDto
+        appointment.doctorId = updateDto.doctorId != 0 ? updateDto.doctorId : appointment.doctorId;
+        appointment.appointmentDate = updateDto.appointmentDate != default ? updateDto.appointmentDate : appointment.appointmentDate;
+        appointment.timeSlot = !string.IsNullOrEmpty(updateDto.timeSlot) ? updateDto.timeSlot : appointment.timeSlot;
+        appointment.status = !string.IsNullOrEmpty(updateDto.status) ? updateDto.status : appointment.status;
+
+        _context.Entry(appointment).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+
+        return Ok("Appointment updated successfully by Admin.");
+    }
+
+
+    // ========================================= SPECIALIZATIONS =========================================
+
+   // ================= SPECIALIZATIONS ===================
+
+// GET: api/Admin/specializations
+[HttpGet("specializations")]
 [Authorize(Roles = "Admin")]
-[HttpPut("{id}/admin-cancel")]
-public async Task<IActionResult> CancelAppointmentByAdmin(int id)
+public async Task<ActionResult<IEnumerable<Specialization>>> GetAllSpecializations()
 {
-    var appointment = await _context.Appointments.FindAsync(id);
-    if (appointment == null) return NotFound("Appointment not found.");
-
-    appointment.status = "Cancelled";
-    _context.Entry(appointment).State = EntityState.Modified;
-    await _context.SaveChangesAsync();
-
-    return Ok("Appointment cancelled successfully by Admin.");
+    return await _context.Specializations.ToListAsync();
 }
 
-// Admin can update/edit any appointment
+// POST: api/Admin/specializations
+[HttpPost("specializations")]
 [Authorize(Roles = "Admin")]
-[HttpPut("{id}/admin-update")]
-public async Task<IActionResult> UpdateAppointmentByAdmin(int id, [FromBody] AppointmentDto updateDto)
+public async Task<ActionResult<Specialization>> CreateSpecialization([FromBody] SpecializationDto specialization)
 {
-    var appointment = await _context.Appointments.FindAsync(id);
-    if (appointment == null) return NotFound("Appointment not found.");
+    var newSpecialization = new Specialization
+    {
+        specializationName = specialization.specializationName
+    };
 
-    // Update appointment fields using AppointmentDto
-    appointment.doctorId = updateDto.doctorId != 0 ? updateDto.doctorId : appointment.doctorId;
-    appointment.appointmentDate = updateDto.appointmentDate != default ? updateDto.appointmentDate : appointment.appointmentDate;
-    appointment.timeSlot = !string.IsNullOrEmpty(updateDto.timeSlot) ? updateDto.timeSlot : appointment.timeSlot;
-    appointment.status = !string.IsNullOrEmpty(updateDto.status) ? updateDto.status : appointment.status;
-
-    _context.Entry(appointment).State = EntityState.Modified;
+    _context.Specializations.Add(newSpecialization);
     await _context.SaveChangesAsync();
 
-    return Ok("Appointment updated successfully by Admin.");
+    return CreatedAtAction(nameof(GetAllSpecializations),
+        new { id = newSpecialization.specializationId }, newSpecialization);
+}
+
+// DELETE: api/Admin/specializations/{id}
+[HttpDelete("specializations/{id}")]
+[Authorize(Roles = "Admin")]
+public async Task<IActionResult> DeleteSpecialization(int id)
+{
+    var specialization = await _context.Specializations.FindAsync(id);
+    if (specialization == null) return NotFound();
+
+    _context.Specializations.Remove(specialization);
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+}
+
+// PUT: api/Admin/specializations/{id}
+[HttpPut("specializations/{id}")]
+[Authorize(Roles = "Admin")]
+public async Task<IActionResult> UpdateSpecialization(int id, [FromBody] SpecializationDto specialization)
+{
+    if (id != specialization.specializationId)
+        return BadRequest("ID mismatch.");
+
+    var existingSpecialization = await _context.Specializations.FindAsync(id);
+    if (existingSpecialization == null) return NotFound();
+
+    existingSpecialization.specializationName = specialization.specializationName;
+
+    _context.Entry(existingSpecialization).State = EntityState.Modified;
+    await _context.SaveChangesAsync();
+
+    return Ok(existingSpecialization);
 }
 
 }

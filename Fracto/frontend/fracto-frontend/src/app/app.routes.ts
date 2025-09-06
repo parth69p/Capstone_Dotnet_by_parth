@@ -7,6 +7,8 @@ import { AppointmentListComponent } from './user/appointment-list-component/appo
 import { AdminDashboardComponent } from './admin/admin-dashboard-component/admin-dashboard-component';
 import { AppointmentManagementComponent } from './admin/appointment-management-component/appointment-management-component';
 import { UserManagementComponent } from './admin/user-management-component/user-management-component';
+import { DoctorManagementComponent } from './admin/doctor-management-component/doctor-management-component';
+import { SpecializationManagementComponent } from './admin/specialization-management-component/specialization-management-component';
 export const routes: Routes = [
     
     // 👇 Default route (empty URL) redirects to login
@@ -18,7 +20,8 @@ export const routes: Routes = [
   {path:'admin-dashboard', component:AdminDashboardComponent},
   {path:'appointment-management', component:AppointmentManagementComponent},
   {path:'user-management',component:UserManagementComponent},
-
+  {path:'doctor-management',component:DoctorManagementComponent},
+  {path:'specializations-management',component:SpecializationManagementComponent},
   // Lazy load auth module
   {
     path: '',

@@ -1,1 +1,88 @@
-<p>doctor-management-component works!</p>
+<div class="container my-5">
+  <div class="card shadow-lg p-4">
+    <h2 class="mb-4 text-primary">Doctor Management</h2>
+
+    <!-- Doctor Form -->
+    <form (ngSubmit)="saveDoctor()" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Name:</label>
+        <input type="text" class="form-control" [(ngModel)]="doctorForm.name" name="name" required />
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">City:</label>
+        <input type="text" class="form-control" [(ngModel)]="doctorForm.city" name="city" required />
+      </div>
+
+      <div class="col-md-6">
+        <label for="specialization" class="form-label">Specialization:</label>
+        <select class="form-select" [(ngModel)]="doctorForm.specializationId" name="specialization" required>
+          <option value="">-- Select --</option>
+          <option *ngFor="let s of specializations" [value]="s.specializationId">
+            {{ s.specializationName }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Rating:</label>
+        <input type="number" class="form-control" [(ngModel)]="doctorForm.rating" name="rating" step="0.1" />
+      </div>
+
+      <div class="col-md-12">
+        <label class="form-label">Profile Image:</label>
+        <input type="file" class="form-control" (change)="onFileSelected($event)" />
+      </div>
+
+      <div class="col-12 d-flex gap-2 mt-3">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-plus-circle"></i> {{ isEditing ? 'Update' : 'Add' }} Doctor
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()">
+          <i class="bi bi-x-circle"></i> Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <hr class="my-5" />
+
+  <!-- Doctors List -->
+  <div class="card shadow-lg p-4">
+    <h3 class="mb-4 text-primary">All Doctors</h3>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>Name</th>
+            <th>City</th>
+            <th>Specialization</th>
+            <th>Rating</th>
+            <th>Image</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of doctors">
+            <td>{{ d.name }}</td>
+            <td>{{ d.city }}</td>
+            <td>{{ d.specializationName }}</td>
+            <td>{{ d.rating }}</td>
+            <td>
+              <img *ngIf="d.profileImagePath" [src]="'https://localhost:5213/' + d.profileImagePath"
+                class="rounded-circle border" width="50" height="50" />
+            </td>
+            <td>
+              <button class="btn btn-sm btn-warning me-2" (click)="editDoctor(d)">
+                <i class="bi bi-pencil-square"></i> Edit
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="deleteDoctor(d.id)">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

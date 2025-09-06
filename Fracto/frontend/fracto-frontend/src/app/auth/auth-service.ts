@@ -14,18 +14,21 @@ const axiosInstance = axios.create({
 export class AuthService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   private roleSubject = new BehaviorSubject<string | null>(null);
-
+  private usernameSubject = new BehaviorSubject<string | null>(null);
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
   role$ = this.roleSubject.asObservable();
+  username$ = this.usernameSubject.asObservable();
 
   constructor(private router: Router) {
     // Restore login state from localStorage on app start
     const storedToken = localStorage.getItem('authToken');
     const storedRole = localStorage.getItem('userRole');
+    const storedUserName = localStorage.getItem('userName');
 
     if (storedToken && storedRole) {
       this.isLoggedInSubject.next(true);
       this.roleSubject.next(storedRole);
+      this.usernameSubject.next(storedUserName);
     }
   }
 
@@ -54,7 +57,10 @@ export class AuthService {
 
         // Update subjects to notify subscribers
         this.isLoggedInSubject.next(true);
-        this.roleSubject.next(response.data.role); // ✅ important
+        // setting user name for navbar
+        this.setUsername(response.data.userName);
+
+        this.roleSubject.next(response.data.role);
       }
 
       return response.data;
@@ -64,16 +70,18 @@ export class AuthService {
     }
   }
 
+  
   logout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userId');
     localStorage.removeItem('userName');
+    this.usernameSubject.next(null);
     this.isLoggedInSubject.next(false);
     this.roleSubject.next(null);
     this.router.navigate(['/login']);
   }
-
+  // =============================== Token and Role Getters ===========================
   getToken(): string | null {
     return localStorage.getItem('authToken');
   }
@@ -84,7 +92,15 @@ export class AuthService {
   getUserId(): string | null {
     return localStorage.getItem('userId');
   }
-  getUserName(): string | null {
-    return localStorage.getItem('userName');
+  
+  //=============================== for displaying name in navbar===========================
+
+
+  setUsername(name: string): void {
+    this.usernameSubject.next(name);
   }
+
+getUserName(): string | null {
+  return this.usernameSubject.value;
+}
 }
