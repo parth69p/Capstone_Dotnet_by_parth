@@ -18,6 +18,8 @@ export class AppointmentBookingComponent implements OnInit {
   errorMessage: string = '';
   successMessage: string = '';
   loading: boolean = false;
+  timeSlots: string[] = [];
+  // gernereate time slots from 9:00 AM to 5:00 PM with 30 min interval
 
   constructor(
     private appointmentService: AppointmentService,
@@ -30,7 +32,37 @@ export class AppointmentBookingComponent implements OnInit {
       if (params['doctorId']) this.selectedDoctorId = +params['doctorId'];
       if (params['doctorName']) this.selectedDoctorName = params['doctorName'];
     });
+
+    this.generateTimeSlots();
   }
+
+    generateTimeSlots() {
+    const startHour = 9;   // 9 AM
+    const endHour = 17;    // 5 PM
+    const slots: string[] = [];
+
+    for (let hour = startHour; hour < endHour; hour++) {
+      // 00 minutes slot
+      slots.push(`${this.formatRange(hour, 0, hour, 30)}`);
+      // 30 minutes slot
+      if (hour < endHour - 1) { // avoid creating 17:30
+        slots.push(`${this.formatRange(hour, 30, hour + 1, 0)}`);
+      }
+    }
+
+    this.timeSlots = slots;
+  }
+
+  private formatRange(startHour: number, startMin: number, endHour: number, endMin: number): string {
+    const start = this.formatTime(startHour, startMin);
+    const end = this.formatTime(endHour, endMin);
+    return `${start} - ${end}`;
+  }
+
+  private formatTime(hour: number, minutes: number): string {
+    return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  }
+
 
   bookAppointment() {
     this.errorMessage = '';

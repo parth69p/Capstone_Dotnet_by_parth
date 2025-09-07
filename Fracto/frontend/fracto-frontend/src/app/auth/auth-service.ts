@@ -25,11 +25,15 @@ export class AuthService {
     const storedRole = localStorage.getItem('userRole');
     const storedUserName = localStorage.getItem('userName');
 
-    if (storedToken && storedRole) {
-      this.isLoggedInSubject.next(true);
-      this.roleSubject.next(storedRole);
+   if (storedToken && storedRole) {
+    this.isLoggedInSubject.next(true);
+    this.roleSubject.next(storedRole);
+
+    // ✅ missing line to restore username
+    if (storedUserName && storedUserName !== 'undefined') {
       this.usernameSubject.next(storedUserName);
     }
+  }
   }
 
   async register(userData: FormData): Promise<any> {
@@ -47,18 +51,18 @@ export class AuthService {
   async login(credentials: any): Promise<any> {
     try {
       const response = await axiosInstance.post<any>('/login', credentials);
-
+ console.log('Login API Response:', response.data);
       if (response.data && response.data.token) {
         // Save token and role
         localStorage.setItem('authToken', response.data.token);
         localStorage.setItem('userRole', response.data.role);
         localStorage.setItem('userId', response.data.userId);
-        localStorage.setItem('userName', response.data.userName);
+        localStorage.setItem('userName', response.data.username);
 
-        // Update subjects to notify subscribers
+        // Update subjects to notify subscrib ers
         this.isLoggedInSubject.next(true);
         // setting user name for navbar
-        this.setUsername(response.data.userName);
+        this.setUsername(response.data.username);
 
         this.roleSubject.next(response.data.role);
       }

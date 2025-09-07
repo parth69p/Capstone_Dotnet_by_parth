@@ -69,7 +69,7 @@
       <ul class="navbar-nav ms-auto">
 
         <li *ngIf="isLoggedIn" class="nav-item me-3 fw-semibold text-primary">
-          👤 {{ Username }}
+          👤Hi, {{ Username }}
         </li>
         <li class="nav-item" *ngIf="isLoggedIn">
           <a class="btn btn-danger px-3" href="#" (click)="logout()">

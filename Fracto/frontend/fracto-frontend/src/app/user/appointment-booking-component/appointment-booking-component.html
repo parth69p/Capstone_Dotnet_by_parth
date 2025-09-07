@@ -17,8 +17,12 @@
 
     <div class="mb-3">
       <label class="form-label">Time Slot</label>
-      <input type="time" class="form-control" [(ngModel)]="timeSlot" />
+      <select class="form-select" [(ngModel)]="timeSlot">
+        <option value="" disabled selected>Select a time slot</option>
+        <option *ngFor="let slot of timeSlots" [value]="slot">{{ slot }}</option>
+      </select>
     </div>
+
 
     <button class="btn btn-primary w-100" (click)="bookAppointment()" [disabled]="loading">
       {{ loading ? 'Booking...' : 'Book Appointment' }}
