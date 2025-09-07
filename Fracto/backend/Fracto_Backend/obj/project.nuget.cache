@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Qf98NTMiHKQ=",
+  "dgSpecHash": "5qoRajnmKnU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\parth\\OneDrive\\Desktop\\Capstone\\Fracto\\backend\\Fracto_Backend\\Fracto_Backend.csproj",
+  "projectFilePath": "C:\\Users\\parth\\OneDrive\\Desktop\\Capstone_By_Parth(NGA)\\Fracto\\backend\\Fracto_Backend\\Fracto_Backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\parth\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\parth\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
