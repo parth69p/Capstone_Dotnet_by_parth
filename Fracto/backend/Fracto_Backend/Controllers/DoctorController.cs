@@ -89,6 +89,7 @@ namespace Fracto.Backend.Controllers
         // for Displaying Records of doctors to the user 
         [HttpGet("all")]
         [Authorize] // allow any logged-in user
+        // api end point : api/Doctors/all
         public async Task<ActionResult<IEnumerable<DoctorDto>>> GetAllDoctors()
         {
             var doctors = await _context.Doctors
