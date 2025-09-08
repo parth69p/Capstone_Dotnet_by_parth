@@ -65,7 +65,7 @@ public class UserController : ControllerBase
                 return Unauthorized("Invalid username or password.");
 
             var token = _jwtService.GenerateToken(user);
-            return Ok(new { Token = token, Role = user.role ,User = user.userId ,Username = user.username});
+            return Ok(new { Token = token, Role = user.role, User = user.userId, Username = user.username });
         }
         return BadRequest("Write username and password");
     }

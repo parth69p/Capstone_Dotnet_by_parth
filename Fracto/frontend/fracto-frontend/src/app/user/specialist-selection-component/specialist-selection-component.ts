@@ -35,7 +35,7 @@ export class SpecialistSelectionComponent implements OnInit {
   }
 
   isTokenExpired(): boolean {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     if (!token) return true;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));

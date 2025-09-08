@@ -16,50 +16,50 @@ public class AppointmentController : ControllerBase
     {
         _context = context;
     }
-  
+
 
     //========================================= USER SIDE =====================================
 
     // POST: api/Appointments
     [HttpPost]
-[Authorize]
-public async Task<ActionResult<AppointmentDto>> BookAppointment([FromBody] CreateAppointmentDto createDto)
-{
-    // Get userId from JWT
-    var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-    var appointment = new Appointment
+    [Authorize]
+    public async Task<ActionResult<AppointmentDto>> BookAppointment([FromBody] CreateAppointmentDto createDto)
     {
-        userId = userId,
-        user = await _context.Users.FindAsync(userId),
-        doctorId = createDto.doctorId,
-        appointmentDate = createDto.appointmentDate.Date,
-        timeSlot = createDto.timeSlot,
-        status = "Pending"
-    };
+        // Get userId from JWT
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-    await _context.Appointments.AddAsync(appointment);
-    await _context.SaveChangesAsync();
+        var appointment = new Appointment
+        {
+            userId = userId,
+            user = await _context.Users.FindAsync(userId),
+            doctorId = createDto.doctorId,
+            appointmentDate = createDto.appointmentDate.Date,
+            timeSlot = createDto.timeSlot,
+            status = "Pending"
+        };
 
-    // Load related data
-    await _context.Entry(appointment).Reference(a => a.user).LoadAsync();
-    await _context.Entry(appointment).Reference(a => a.doctor).LoadAsync();
+        await _context.Appointments.AddAsync(appointment);
+        await _context.SaveChangesAsync();
 
-    var appointmentDto = new AppointmentDto
-    {
-        id = appointment.appointmentId,
-        userId = appointment.userId,
-        userName = appointment.user?.username ?? "N/A",
-        doctorId = appointment.doctorId,
-        doctorName = appointment.doctor?.name ?? "N/A",
-        appointmentDate = appointment.appointmentDate,
-        timeSlot = appointment.timeSlot,
-        status = appointment.status
-    };
+        // Load related data
+        await _context.Entry(appointment).Reference(a => a.user).LoadAsync();
+        await _context.Entry(appointment).Reference(a => a.doctor).LoadAsync();
 
-    return CreatedAtAction(nameof(GetMyAppointments), new { id = appointment.appointmentId }, appointmentDto);
-}
+        var appointmentDto = new AppointmentDto
+        {
+            id = appointment.appointmentId,
+            userId = appointment.userId,
+            userName = appointment.user?.username ?? "N/A",
+            doctorId = appointment.doctorId,
+            doctorName = appointment.doctor?.name ?? "N/A",
+            appointmentDate = appointment.appointmentDate,
+            timeSlot = appointment.timeSlot,
+            status = appointment.status
+        };
 
+        return CreatedAtAction(nameof(GetMyAppointments), new { id = appointment.appointmentId }, appointmentDto);
+    }
+    [Authorize]
     // GET: api/Appointments/my-appointments
     [HttpGet("my-appointments")]
     public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetMyAppointments()
@@ -116,4 +116,5 @@ public async Task<ActionResult<AppointmentDto>> BookAppointment([FromBody] Creat
         return Ok("Appointment cancelled successfully.");
     }
 
-}     // ================= ADMIN SIDE =================
+}
+

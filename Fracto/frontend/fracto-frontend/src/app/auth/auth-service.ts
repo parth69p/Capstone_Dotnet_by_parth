@@ -29,7 +29,7 @@ export class AuthService {
     this.isLoggedInSubject.next(true);
     this.roleSubject.next(storedRole);
 
-    // ✅ missing line to restore username
+    // missing line to restore username
     if (storedUserName && storedUserName !== 'undefined') {
       this.usernameSubject.next(storedUserName);
     }

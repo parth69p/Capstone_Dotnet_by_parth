@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import {  RouterLink, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from './auth/auth-service';
 import { Subscription } from 'rxjs';
@@ -43,7 +44,7 @@ export class App implements OnInit, OnDestroy {
     // updating according to username
     this.sub.push(
       this.authService.username$.subscribe((name) => {
-        this.Username = name ?? ''; // ✅ updates automatically
+        this.Username = name ?? ''; // updates automatically
         this.cd.detectChanges(); // Manually trigger change detection
       })
     );

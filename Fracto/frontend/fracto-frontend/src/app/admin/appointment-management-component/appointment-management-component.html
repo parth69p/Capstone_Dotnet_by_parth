@@ -2,7 +2,7 @@
   <h2 class="mb-4 text-center text-primary fw-bold">🗓️ Appointments Management</h2>
 
   <!-- Table of appointments -->
-  <div class="card border-0 shadow rounded-3 mb-4">
+  <div class="card border-0 shadow rounded-3 mb-4" id="print-section">
     <div class="card-body p-0">
       <div class="table-responsive" *ngIf="appointments.length > 0; else noAppointments">
         <table class="table table-hover align-middle mb-0">
@@ -31,8 +31,7 @@
                     'bg-warning text-dark': appt.status === 'Pending',
                     'bg-success': appt.status === 'Confirmed',
                     'bg-danger': appt.status === 'Cancelled'
-                  }"
-                >
+                  }">
                   {{ appt.status }}
                 </span>
               </td>
@@ -40,14 +39,12 @@
                 <button
                   class="btn btn-sm btn-outline-danger rounded-pill px-3 me-2"
                   (click)="cancelAppointment(appt.id)"
-                  [disabled]="appt.status === 'Cancelled'"
-                >
+                  [disabled]="appt.status === 'Cancelled'">
                    Cancel
                 </button>
                 <button
                   class="btn btn-sm btn-outline-primary rounded-pill px-3"
-                  (click)="openUpdateForm(appt)"
-                >
+                  (click)="openUpdateForm(appt)">
                    Update
                 </button>
               </td>
@@ -63,61 +60,17 @@
     </div>
   </div>
 
-  <!-- Update form below the table -->
+  <!-- Update form stays outside so it won't be printed -->
   <div *ngIf="selectedAppointment" class="card border-0 shadow p-4 rounded-3 mb-4">
-    <h4 class="mb-3 text-primary fw-semibold">
-      Update Appointment (ID: {{ selectedAppointment.id }})
-    </h4>
+    ...
+  </div>
 
-    <form (ngSubmit)="submitUpdate()" class="row g-3">
-      <div class="col-md-4">
-        <label class="form-label fw-semibold text-muted">Date:</label>
-        <input
-          type="date"
-          [(ngModel)]="selectedAppointment.appointmentDate"
-          name="appointmentDate"
-          class="form-control rounded-pill shadow-sm"
-          required
-        />
-      </div>
-
-      <div class="col-md-4">
-        <label class="form-label fw-semibold text-muted">Time Slot:</label>
-        <input
-          type="text"
-          [(ngModel)]="selectedAppointment.timeSlot"
-          name="timeSlot"
-          class="form-control rounded-pill shadow-sm"
-          placeholder="e.g. 10:00 AM - 11:00 AM"
-          required
-        />
-      </div>
-
-      <div class="col-md-4">
-        <label class="form-label fw-semibold text-muted">Status:</label>
-        <select
-          [(ngModel)]="selectedAppointment.status"
-          name="status"
-          class="form-select rounded-pill shadow-sm"
-        >
-          <option value="Pending">Pending</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
-      </div>
-
-      <div class="col-12 mt-3 d-flex gap-2">
-        <button type="submit" class="btn btn-primary px-4 rounded-pill shadow-sm">
-           Save
-        </button>
-        <button
-          type="button"
-          class="btn btn-light border px-4 rounded-pill shadow-sm"
-          (click)="selectedAppointment = null"
-        >
-           Cancel
-        </button>
-      </div>
-    </form>
+  <!-- Print Button at End -->
+  <div class="text-end mt-3">
+    <button 
+      class="btn btn-gradient rounded-pill px-4 py-2 shadow-sm d-inline-flex align-items-center gap-2" 
+      (click)="printAppointments()">
+      <i class="bi bi-printer-fill"></i> Print Appointments
+    </button>
   </div>
 </div>

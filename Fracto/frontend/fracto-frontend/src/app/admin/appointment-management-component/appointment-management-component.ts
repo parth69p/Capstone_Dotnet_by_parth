@@ -61,4 +61,18 @@ export class AppointmentManagementComponent implements OnInit {
       console.error('Error updating appointment:', err);
     }
   }
+  printAppointments() {
+  const printContents = document.getElementById('print-section')?.innerHTML;
+  const originalContents = document.body.innerHTML;
+
+  if (printContents) {
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload(); // reload to restore app state
+  }
 }
+
+}
+
+
